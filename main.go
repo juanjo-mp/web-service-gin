@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"web-service-gin/config"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,6 +25,9 @@ var albums = []album{
 
 func main() {
 	router := gin.Default()
+
+	config.ConnectDB()
+
 	router.GET("/albums", getAlbums)
 	router.GET("/albums/:id", getAlbumByID)
 	router.POST("/albums", postAlbums)
