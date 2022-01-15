@@ -3,32 +3,24 @@ package main
 import (
 	"os"
 
-	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 
-	"web-service-gin/controllers"
+	"web-service-gin/routes"
 )
 
 func main() {
-
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 
-	router := gin.New()
-	router.Use(gin.Logger())
+	r := gin.Default()
 
-	router.Use(cors.Default())
+	r.Use(static.Serve("/", static.LocalFile("./frontend/dist", false)))
 
-	router.POST("/painting/create", controllers.AddPainting)
+	v1 := r.Group("/api")
 
-	router.GET("/artist/:artist", controllers.GetPaintingsByArtist)
-	router.GET("/painting", controllers.GetPaintings)
-	router.GET("/painting/:id/", controllers.GetPaintingByID)
+	routes.Painting(v1.Group("/painting"))
+	routes.Artist(v1.Group("/artist"))
 
-	router.PUT("/artist/update/:id", controllers.UpdateArtist)
-	router.PUT("/painting/update/:id", controllers.UpdatePainting)
-
-	router.DELETE("/painting/delete/:id", controllers.DeleteOrder)
-
-	router.Run(host + ":" + port)
+	r.Run(host + ":" + port)
 }
